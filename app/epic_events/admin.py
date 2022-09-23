@@ -86,6 +86,7 @@ class EventAdmin(admin.ModelAdmin):
     #         # return only clients related to the salesman/saleswoman
     #         return queryset.filter(sales_contact=self.request.user.id)
 
+
         
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'client':
