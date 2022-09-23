@@ -80,7 +80,8 @@ DATABASES = {
         'NAME': 'epic_eventsDB',
         'USER': 'postgres',
         'PASSWORD': 'admin',
-        'HOST':'localhost'
+        'HOST':'localhost',
+        # 'DISABLE_SERVER_SIDE_CURSORS': True,
         }
 }
 
