@@ -74,20 +74,7 @@ class ContractStatusAdmin(admin.ModelAdmin):
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
     list_display= ('client','support_contact','event_status')
-    # # readonly_fields = ('id',)
 
-    # def get_queryset(self, request):
-    #     self.request = request
-    #     queryset = super().get_queryset(request)
-    #     if request.user.is_superuser:
-    #         return queryset.all()
-
-    #     if request.user.groups.filter(name='sales'):
-    #         # return only clients related to the salesman/saleswoman
-    #         return queryset.filter(sales_contact=self.request.user.id)
-
-
-        
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'client':
             kwargs['limit_choices_to'] ={'sales_contact_id': request.user.id}  
@@ -104,17 +91,3 @@ class EventAdmin(admin.ModelAdmin):
             kwargs['limit_choices_to']=q_objects  
         return super(EventAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
         
-    # def get_form(self, request, obj=None, **kwargs):
-        # form = super().get_form(request, obj, **kwargs)
-        # if obj:
-        #     form.base_fields['event_status'].queryset = Contract.objects.all().filter(sales_contact_id =8453)
-        # return form
-    # def save_model(self, request, obj, form, change) -> None: 
-    #     super().save_model(request, obj, form, change)
-    #     print('testtesttests')
-    #     print(obj.id)
-    #     cs = ContractStatus(id=obj.id, status = str(obj.status))
-    #     cs.save()
-
-    #     return super().save_model(request, obj, form, change)
-
