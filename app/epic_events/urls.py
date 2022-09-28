@@ -2,9 +2,10 @@ from django.urls import path
 from .views import Index
 from django.urls import include, path
 from rest_framework import routers
-from .views import ClientViewSet, ContractViewSet, EventViewSet
+from .views import ClientViewSet, ContractViewSet, EventViewSet, UserViewSet
 
 router = routers.DefaultRouter()
+router.register(r'users', UserViewSet)
 router.register(r'clients', ClientViewSet)
 router.register(r'contracts', ContractViewSet)
 router.register(r'events', EventViewSet)

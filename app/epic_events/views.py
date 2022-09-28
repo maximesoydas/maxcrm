@@ -3,13 +3,47 @@ from gc import DEBUG_COLLECTABLE
 from django.shortcuts import render
 from django.views import View
 # Create your views here.
-from .models import Client, Contract, ContractStatus, Event
+from .models import Client, Contract, ContractStatus, Event, User
 from rest_framework import viewsets
 from rest_framework import permissions
-from .serializers import ClientSerializer, ContractSerializer, EventSerializer
+from .serializers import ClientSerializer, ContractSerializer, EventSerializer, UserSerializer
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    
+    def list(self, request):
+        if request.user.is_superuser:
+            queryset = User.objects.all()
+            serializer = UserSerializer(queryset, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(data="Only Management/superusers can view users")
+
+    def create(self, request, *args, **kwargs):
+        if request.user.is_superuser:
+            return super().create(request, *args, **kwargs)
+        else:
+            data = "Only Management/superusers can register a new client"
+            return Response(data)
+        
+        
+    def update(self, request, *args, **kwargs):
+        if request.user.is_superuser:
+            return super().update(request, *args, **kwargs)
+        else:
+            data = "//!\ Cannot Update //!\ (only a superuser(manager) can update users)"
+            return Response(data)
+        
+    def destroy(self, request, *args, **kwargs):
+        if request.user.is_superuser:
+            return super().destroy(request, *args, **kwargs)
+        else:
+            return Response(data="//!\ Cannot Delete //!\ (only a superuser(manager) can delete clients)")
+            
 class ClientViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
