@@ -66,9 +66,10 @@ class ClientViewSet(viewsets.ModelViewSet):
             queryset = Client.objects.all().filter(event__support_contact=self.request.user.id)
             serializer = ClientSerializer(queryset, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
-        
-        serializer = ClientSerializer(queryset, many=True)
-        return Response(serializer.data)
+        else:
+            data = "Only a sales person can read a new client"
+            return Response(data)
+
 
     def create(self, request, *args, **kwargs):
         if request.user.groups.filter(name='sales'):
