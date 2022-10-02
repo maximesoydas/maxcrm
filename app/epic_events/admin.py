@@ -35,6 +35,8 @@ class ContractAdmin(admin.ModelAdmin):
     list_display= ('id','sales_contact','client','status',)
     # readonly_fields = ('id',)
 
+
+    # List Contracts
     def get_queryset(self, request):
         self.request = request
         queryset = super().get_queryset(request)
@@ -45,7 +47,7 @@ class ContractAdmin(admin.ModelAdmin):
             # return only clients related to the salesman/saleswoman
             return queryset.filter(sales_contact=self.request.user.id)
 
-        
+    # Create/Update Contracts
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'sales_contact':
             kwargs['initial'] = request.user.id

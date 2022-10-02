@@ -52,10 +52,11 @@ class ContractStatus(models.Model):
         return str(self.id) + ' ' + str(self.status)
 
 class Event(models.Model):
+    id = models.AutoField(primary_key=True, editable=False)
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     date_create = models.DateTimeField(auto_now=True)
     date_updated = models.DateTimeField(auto_now=True)
-    support_contact = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'groups__name': "support"})
+    support_contact = models.ForeignKey(User,blank=True, null=True, on_delete=models.CASCADE, limit_choices_to={'groups__name': "support"})
     event_status = models.ForeignKey(ContractStatus, on_delete=models.CASCADE)
     attendees = models.IntegerField()
     event_date = models.DateTimeField()
