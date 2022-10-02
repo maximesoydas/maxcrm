@@ -4,17 +4,20 @@ from django.views import View
 # Create your views here.
 from .models import Client, Contract, ContractStatus, Event, User
 from rest_framework import viewsets
-from rest_framework import permissions
+from rest_framework import permissions, filters
 from .serializers import ClientSerializer, ContractSerializer, EventSerializer, UserSerializer, ContractStatusSerializer
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from django.forms.models import model_to_dict
-
+from django_filters.rest_framework import DjangoFilterBackend
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    
+    filter_backends=[DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['id']
+    search_fields = ['id']
+    ordering_fields = ['id']
     def list(self, request):
         if request.user.is_superuser:
             queryset = User.objects.all()
@@ -51,7 +54,12 @@ class ClientViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all().order_by('-date_create')
     serializer_class = ClientSerializer
     permission_classes = [permissions.IsAuthenticated]
-
+    filter_backends=[DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['first_name','last_name','email']
+    search_fields = ['first_name','last_name','email']
+    ordering_fields = ['first_name','last_name','email']
+    
+    
     def list(self, request):
         if request.user.is_superuser:
             queryset = Client.objects.all()
@@ -123,7 +131,13 @@ class ContractViewSet(viewsets.ModelViewSet):
     queryset = Contract.objects.all().order_by('-date_create')
     serializer_class = ContractSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filter_backends=[DjangoFilterBackend, filters.SearchFilter,filters.OrderingFilter]
+    filterset_fields = ['client__first_name','client__last_name','client__email','amount','date_create']
+    search_fields = ['client__first_name','client__last_name','client__email','amount','date_create']
+    ordering_fields = ['client__first_name','client__last_name','client__email','amount','date_create']
 
+   
+   
     def list(self, request):
         if request.user.is_superuser:
             queryset = Contract.objects.all()
@@ -254,6 +268,10 @@ class EventViewSet(viewsets.ModelViewSet):
     serializer_class = EventSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    filter_backends=[DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['client__first_name','client__last_name','client__email', 'event_date']
+    search_fields = ['client__first_name','client__last_name','client__email', 'event_date']
+    ordering_fields = ['client__first_name','client__last_name','client__email', 'event_date']
 
     
     def list(self, request):
