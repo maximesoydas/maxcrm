@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'epic_events.apps.EpicEventsConfig',
     'rest_framework',
     'rest_framework.authtoken',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
@@ -141,4 +142,8 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'AUTH_HEADER_TYPES': ('Bearer',),
 
+}
+GRAPH_MODELS = {
+  'app_labels': ["epic_events", "django.contrib.auth"],
+  'graph_models': True,
 }
