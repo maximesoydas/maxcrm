@@ -8,13 +8,12 @@ from rest_framework import permissions, filters
 from .serializers import ClientSerializer, ContractSerializer, EventSerializer, UserSerializer, ContractStatusSerializer
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from django.forms.models import model_to_dict
 from django_filters.rest_framework import DjangoFilterBackend
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    filter_backends=[DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filter_backends=[DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter,]
     filterset_fields = ['id']
     search_fields = ['id']
     ordering_fields = ['id']
@@ -54,26 +53,22 @@ class ClientViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all().order_by('-date_create')
     serializer_class = ClientSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filter_backends=[DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filter_backends=[DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter,]
     filterset_fields = ['first_name','last_name','email']
     search_fields = ['first_name','last_name','email']
     ordering_fields = ['first_name','last_name','email']
     
-    
-    def list(self, request):
-        if request.user.is_superuser:
-            queryset = Client.objects.all()
-            serializer = ClientSerializer(queryset, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        if request.user.groups.filter(name='sales'):
-            queryset = Client.objects.all().filter(sales_contact=self.request.user.id)
-            serializer = ClientSerializer(queryset, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        if request.user.groups.filter(name='support'):
+
+
+    def get_queryset(self):
+        # allows us to filter the queries depending on the current user's groups
+        if self.request.user.is_superuser:
+            return super().get_queryset()
+        if self.request.user.groups.filter(name='sales'):
+            return super().get_queryset().filter(sales_contact=self.request.user.id)
+        if self.request.user.groups.filter(name='support'):
             # return only clients related to the event 'supported' by the user
-            queryset = Client.objects.all().filter(event__support_contact=self.request.user.id)
-            serializer = ClientSerializer(queryset, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return super().get_queryset().filter(event__support_contact=self.request.user.id)
         else:
             data = "Only a sales person can read a new client"
             return Response(data)
